@@ -9,9 +9,9 @@ public class RaedCSV {
 
 	public static void main(String[] args) {
 
-		RaedCSV obj = new RaedCSV();
+		//RaedCSV obj = new RaedCSV();
 		//obj.generateInsertLocalidade();
-		
+		System.out.println("fdfsdf");
 
 	}
 
