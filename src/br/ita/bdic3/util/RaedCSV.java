@@ -1,4 +1,4 @@
-package br.com.bdic3.util;
+package br.ita.bdic3.util;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
