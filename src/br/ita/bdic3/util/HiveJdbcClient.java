@@ -9,7 +9,7 @@ import java.sql.DriverManager;
 public class HiveJdbcClient {
 
 	private static String driverName = "org.apache.hadoop.hive.jdbc.HiveDriver";
-	private String sqlClienteTransacao = "SELECT cliente.cli_id, cliente.cli_cpf, transacao.tra_data, transacao.tra_total FROM cliente JOIN transacao WHERE transacao.cli_id = cliente.cli_id";
+	private String sqlClienteTransacao = "SELECT cliente.cli_nome, cliente.cli_cpf, transacao.tra_data, transacao.tra_total FROM cliente JOIN transacao WHERE transacao.cli_id = cliente.cli_id";
 	private Connection con;
 	private Statement stmt;
 
@@ -61,12 +61,34 @@ public class HiveJdbcClient {
 	public void consultaClienteCpf(String cpf) throws SQLException {
 		System.out.println("PROCESSANDO");
 		try {
-			ResultSet res = stmt
-					.executeQuery(sqlClienteTransacao + " AND cliente.cli_cpf = "
-							+ cpf);
+			ResultSet res = stmt.executeQuery(sqlClienteTransacao
+					+ " AND cliente.cli_cpf = " + cpf);
 			System.out.println("CLIENTE NOME|    CPF   | DATA |VALOR   ");
 			while (res.next()) {
-				System.out.println("      "+res.getInt(1) + "  |  " + res.getString(2) + "  |  " + res.getString(3) + "  |  " + res.getFloat(4));
+				System.out.println(res.getString(1) + "  |  "
+						+ res.getString(2) + "  |  " + res.getString(3)
+						+ "  |  " + res.getFloat(4));
+			}
+		} catch (Exception e) {
+			System.out.println("ERRO consulta hive: " + e);
+			e.printStackTrace();
+			System.exit(1);
+		}
+
+	}
+
+	public void consultaClienteData(String cli_cpf, String data)
+			throws SQLException {
+		System.out.println("PROCESSANDO");
+		try {
+			ResultSet res = stmt.executeQuery(sqlClienteTransacao
+					+ " AND transacao.tra_data = '" + data + "'"
+					+ " AND cliente.cli_cpf = "+ cli_cpf);
+			System.out.println("CLIENTE NOME|    CPF   | DATA |VALOR   ");
+			while (res.next()) {
+				System.out.println(res.getString(1) + "  |  "
+						+ res.getString(2) + "  |  " + res.getString(3)
+						+ "  |  " + res.getFloat(4));
 			}
 		} catch (Exception e) {
 			System.out.println("ERRO consulta hive: " + e);

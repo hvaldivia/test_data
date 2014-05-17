@@ -14,8 +14,8 @@ package br.ita.bdic3;
 import java.sql.SQLException;
 
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
-import br.ita.bdic3.dao.TransacaoDAO;
 import br.ita.bdic3.model.Fraude;
 import br.ita.bdic3.model.Transacao;
 import br.ita.bdic3.util.Boxsplot;
@@ -32,19 +32,51 @@ public class Run {
 
 	}
 
+	public boolean verificaCampos(String campo) {
+		if (campo.compareTo("") == 0) {
+			JOptionPane.showMessageDialog(null, "Preencher o Campo");
+			return true;
+		} else
+			return false;
+	}
+
 	public void olap05us04() {
 
 		// Conexão HIVE
 		HiveJdbcClient hive = new HiveJdbcClient();
-
+		UIManager.put("OptionPane.noButtonText", "Buscar CPF");
+		UIManager.put("OptionPane.yesButtonText", "Buscar CPF + DATA");
+		String cpf = "";
+		String data = "";
 		try {
 
 			System.out.println("Status da Conexão HIVE :"
 					+ hive.connectionHive());
 
-			// CPFs para testes
-			// 1957420046
-			hive.consultaClienteCpf("1957420046");
+			switch (JOptionPane.showConfirmDialog(null, "Selecione uma Opção",
+					null, JOptionPane.YES_NO_OPTION)) {
+			case 0:
+				do {
+					cpf = JOptionPane.showInputDialog("Qual é o CPF ?");
+				} while (verificaCampos(cpf));
+				do {
+					data = JOptionPane
+							.showInputDialog("Qual é a DATA ?");
+				} while (verificaCampos(cpf));
+				// DATAS para testes
+				// 1957460044 - 30/04/2013
+			    hive.consultaClienteData(cpf, data);
+				break;
+			case 1:
+				do {
+					cpf = JOptionPane.showInputDialog("Qual é o CPF ?");
+				} while (verificaCampos(cpf));
+				// String data = JOptionPane.showInputDialog("Qual é a DATA ?");
+				// CPFs para testes
+				// 1957420046
+				hive.consultaClienteCpf(cpf);
+				break;
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
