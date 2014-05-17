@@ -1,5 +1,16 @@
 package br.ita.bdic3;
 
+/**
+ * Busca dados no Hive via JDBC.
+ * Para executar é necessário ter no classpath /usr/lib/hive/lib/*.jar e /usr/lib/hadoop/*.jar
+ * O driver hive-jdbc conecta-se no Thrift (HiveServer2). 
+ * Para iniciar o Thrift (HiveServer2) execute hive --service hiveserver
+ * Certifique-se que está no ar com sudo netstat -tulpn | grep 10000    
+ *
+ * @author
+ * Airton Lastori
+ */
+
 import java.sql.SQLException;
 
 import javax.swing.JOptionPane;
@@ -11,18 +22,40 @@ import br.ita.bdic3.util.Boxsplot;
 import br.ita.bdic3.util.HiveJdbcClient;
 
 public class Run {
-	
+
 	static Transacao tm = new Transacao();
-	
+
 	public static void main(String[] args) throws SQLException {
 		Run run = new Run();
-		run.olap02us05();
+		// run.olap02us05();
+		run.olap05us04();
 
 	}
-	
-	public void olap02us05() throws SQLException{
+
+	public void olap05us04() {
+
+		// Conexão HIVE
+		HiveJdbcClient hive = new HiveJdbcClient();
+
+		try {
+
+			System.out.println("Status da Conexão HIVE :"
+					+ hive.connectionHive());
+
+			// CPFs para testes
+			// 1957420046
+			hive.consultaClienteCpf("1957420046");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+
+	}
+
+	public void olap02us05() throws SQLException {
 		// Captura Entrada - Sem tratamentos
-		int cli_id = 40000; 
+		int cli_id = 40000;
 		String valor = JOptionPane.showInputDialog("Qual é o valor da compra?");
 
 		float valor_max = 0;
@@ -57,8 +90,10 @@ public class Run {
 		// dispara-se uma mensagem ao cliente solitando confirmação
 		// de compra
 		if (Float.parseFloat(valor) > upper_limit) {
-			switch (JOptionPane.showConfirmDialog(null, 
-					   "Transação Incomum Registrada \r\n Valor "+valor + "\r\n Você autoriza essa transação ?" ,null, JOptionPane.YES_NO_OPTION)) {
+			switch (JOptionPane.showConfirmDialog(null,
+					"Transação Incomum Registrada \r\n Valor " + valor
+							+ "\r\n Você autoriza essa transação ?", null,
+					JOptionPane.YES_NO_OPTION)) {
 			case 0:
 				tm.transacaoDev(cli_id, Float.parseFloat(valor), "N");
 				tm.save(tm);
@@ -74,14 +109,15 @@ public class Run {
 				System.out.println("Salvar Fraude");
 				break;
 			}
-		// Senão para na comparação acima
-		// a transação é concretizada	
+			// Senão para na comparação acima
+			// a transação é concretizada
 		} else {
-		
-			tm.transacaoDev(cli_id, Float.parseFloat(valor),"");
+
+			tm.transacaoDev(cli_id, Float.parseFloat(valor), "");
 			tm.save(tm);
-			
-			JOptionPane.showMessageDialog(null, "Transação Realizada com Sucesso");
+
+			JOptionPane.showMessageDialog(null,
+					"Transação Realizada com Sucesso");
 		}
 	}
 
